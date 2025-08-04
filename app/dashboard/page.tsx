@@ -274,9 +274,9 @@ export default function DashboardPage() {
                   }`}>
                     <div className="flex justify-between items-center">
                       <div>
-                        <div className="font-semibold">{pick.game.awayTeam}</div>
+                        <div className="font-bold">{pick.game.awayTeam}</div>
                         <div className="text-sm text-gray-600">
-                          {pick.game.modifiedSpread > 0 ? `-${pick.game.modifiedSpread}` : 'PICK'}
+                          {pick.game.modifiedSpread === 0 ? `${pick.game.awayTeam} PICK` : `${pick.game.awayTeam} ${-pick.game.modifiedSpread}`}
                         </div>
                       </div>
                       {pick.game.isComplete && (
@@ -293,9 +293,9 @@ export default function DashboardPage() {
                   }`}>
                     <div className="flex justify-between items-center">
                       <div>
-                        <div className="font-semibold">{pick.game.homeTeam}</div>
+                        <div className="font-bold">{pick.game.homeTeam}</div>
                         <div className="text-sm text-gray-600">
-                          {pick.game.modifiedSpread > 0 ? '+' : ''}{pick.game.modifiedSpread}
+                          {pick.game.modifiedSpread === 0 ? `${pick.game.homeTeam} PICK` : `${pick.game.homeTeam} ${pick.game.modifiedSpread > 0 ? '+' : ''}${pick.game.modifiedSpread}`}
                         </div>
                       </div>
                       {pick.game.isComplete && (

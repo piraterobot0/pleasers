@@ -38,9 +38,9 @@ export default function GameCard({ game, pick, onPickChange, disabled = false }:
     }
   };
 
-  const formatSpread = (spread: number) => {
-    if (spread === 0) return 'PICK';
-    return spread > 0 ? `+${spread}` : `${spread}`;
+  const formatSpread = (spread: number, teamName: string) => {
+    if (spread === 0) return `${teamName} PICK`;
+    return spread > 0 ? `${teamName} +${spread}` : `${teamName} ${spread}`;
   };
 
   const getPickResult = () => {
@@ -94,9 +94,9 @@ export default function GameCard({ game, pick, onPickChange, disabled = false }:
         >
           <div className="flex justify-between items-center">
             <div>
-              <div className="font-semibold">{game.awayTeam}</div>
+              <div className="font-bold">{game.awayTeam}</div>
               <div className="text-sm text-gray-600">
-                {game.modifiedSpread > 0 ? formatSpread(-game.modifiedSpread) : 'PICK'}
+                {formatSpread(-game.modifiedSpread, game.awayTeam)}
               </div>
             </div>
             {game.isComplete && (
@@ -117,9 +117,9 @@ export default function GameCard({ game, pick, onPickChange, disabled = false }:
         >
           <div className="flex justify-between items-center">
             <div>
-              <div className="font-semibold">{game.homeTeam}</div>
+              <div className="font-bold">{game.homeTeam}</div>
               <div className="text-sm text-gray-600">
-                {formatSpread(game.modifiedSpread)}
+                {formatSpread(game.modifiedSpread, game.homeTeam)}
               </div>
             </div>
             {game.isComplete && (
@@ -146,8 +146,8 @@ export default function GameCard({ game, pick, onPickChange, disabled = false }:
 
       {/* Spread Info */}
       <div className="mt-3 text-xs text-gray-500 text-center">
-        Original: {game.homeTeam} {formatSpread(game.originalSpread)} | 
-        Modified: {game.homeTeam} {formatSpread(game.modifiedSpread)}
+        Original: {formatSpread(game.originalSpread, game.homeTeam)} | 
+        Modified: {formatSpread(game.modifiedSpread, game.homeTeam)}
       </div>
 
       {hasStarted && !game.isComplete && (
