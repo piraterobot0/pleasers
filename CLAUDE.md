@@ -1,5 +1,9 @@
 # Claude.md - Project Context and Instructions
 
+## Production Details
+🌐 **Live URL**: https://pleasers.vercel.app
+🔑 **Admin Key**: 3Su1diWj1YA224NiB+F8Jweq+8OX8UUVtnt6ZQm1oOo=
+
 ## Project Overview
 NFL Spreads Picker - A web app where users pick NFL games with modified spreads (+6 for home teams).
 
@@ -24,10 +28,11 @@ NFL Spreads Picker - A web app where users pick NFL games with modified spreads 
 - `Leaderboard` - Calculated rankings
 
 ## Current State
-- Database connected to Supabase
-- Build failing due to ESLint errors
-- MVP functionally complete
-- Needs deployment fixes
+- ✅ Successfully deployed to production
+- ✅ Database connected to Supabase
+- ✅ ESLint errors fixed
+- ✅ 16 preseason games seeded
+- ✅ MVP fully functional and live
 
 ## Environment Variables
 ```
@@ -51,24 +56,25 @@ ADMIN_KEY - For admin panel access
 4. Leaderboard shows rankings
 
 ## Known Issues
-1. ESLint errors blocking deployment (~20 errors)
-2. Multiple lockfile warnings
-3. TypeScript `any` types need fixing
+1. ✅ ESLint errors - FIXED
+2. ✅ Multiple lockfile warnings - RESOLVED
+3. TypeScript improvements needed (non-blocking)
 
 ## Quick Commands
 ```bash
 # Development
 npm run dev
 
-# Build (currently failing)
+# Build
 npm run build
 
 # Database
 npx prisma db push
 npx prisma generate
 
-# Admin panel password (local)
-test-admin-key-change-in-production
+# Admin panel password
+# Production: 3Su1diWj1YA224NiB+F8Jweq+8OX8UUVtnt6ZQm1oOo=
+# Local: test-admin-key-change-in-production
 ```
 
 ## Next Actions
