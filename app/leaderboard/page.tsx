@@ -69,8 +69,11 @@ export default function LeaderboardPage() {
 
         {leaderboard.length === 0 ? (
           <div className="text-center py-12 bg-gray-50 rounded-lg">
-            <p className="text-gray-500">No picks have been scored yet.</p>
-            <p className="text-sm text-gray-400 mt-2">Check back after games are completed!</p>
+            <p className="text-gray-500">No picks have been submitted yet.</p>
+            <p className="text-sm text-gray-400 mt-2">Be the first to make your picks!</p>
+            <a href="/picks" className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+              Make Your Picks
+            </a>
           </div>
         ) : (
           <div className="bg-white shadow-lg rounded-lg overflow-hidden">
@@ -85,6 +88,9 @@ export default function LeaderboardPage() {
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Points
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Picks Made
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Record
@@ -107,16 +113,16 @@ export default function LeaderboardPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <span className={`text-lg font-bold ${
-                            entry.rank === 1 ? 'text-yellow-500' :
-                            entry.rank === 2 ? 'text-gray-400' :
-                            entry.rank === 3 ? 'text-orange-600' :
+                            entry.totalPoints > 0 && entry.rank === 1 ? 'text-yellow-500' :
+                            entry.totalPoints > 0 && entry.rank === 2 ? 'text-gray-400' :
+                            entry.totalPoints > 0 && entry.rank === 3 ? 'text-orange-600' :
                             'text-gray-600'
                           }`}>
-                            {entry.rank || '-'}
+                            {entry.totalPoints > 0 ? (entry.rank || index + 1) : index + 1}
                           </span>
-                          {entry.rank === 1 && '🏆'}
-                          {entry.rank === 2 && '🥈'}
-                          {entry.rank === 3 && '🥉'}
+                          {entry.totalPoints > 0 && entry.rank === 1 && '🏆'}
+                          {entry.totalPoints > 0 && entry.rank === 2 && '🥈'}
+                          {entry.totalPoints > 0 && entry.rank === 3 && '🥉'}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -142,17 +148,31 @@ export default function LeaderboardPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-600">
-                        {entry.correctPicks}-{entry.totalPicks - entry.correctPicks - entry.ties}
-                        {entry.ties > 0 && `-${entry.ties}`}
+                        <span className="font-medium">{entry.totalPicks}/16</span>
+                        <div className="text-xs text-gray-400 mt-1">
+                          {entry.totalPicks === 16 ? 'Complete' : `${16 - entry.totalPicks} remaining`}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-600">
+                        {entry.correctPicks + entry.ties > 0 ? (
+                          <>{entry.correctPicks}-{entry.totalPicks - entry.correctPicks - entry.ties}
+                          {entry.ties > 0 && `-${entry.ties}`}</>
+                        ) : (
+                          <span className="text-gray-400">Pending</span>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          entry.winPercentage >= 60 ? 'bg-green-100 text-green-800' :
-                          entry.winPercentage >= 50 ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
-                        }`}>
-                          {entry.winPercentage.toFixed(1)}%
-                        </span>
+                        {entry.correctPicks + entry.ties > 0 ? (
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            entry.winPercentage >= 60 ? 'bg-green-100 text-green-800' :
+                            entry.winPercentage >= 50 ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {entry.winPercentage.toFixed(1)}%
+                          </span>
+                        ) : (
+                          <span className="text-gray-400 text-xs">-</span>
+                        )}
                       </td>
                     </tr>
                   );
@@ -163,6 +183,7 @@ export default function LeaderboardPage() {
         )}
 
         <div className="mt-8 text-sm text-gray-500 text-center">
+          <p>Showing all users who have submitted picks for this week</p>
           <p>Leaderboard updates automatically as games complete</p>
           <p>Win = 1 point | Push = 0.5 points | Loss = 0 points</p>
         </div>

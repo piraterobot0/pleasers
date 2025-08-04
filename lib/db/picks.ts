@@ -113,7 +113,8 @@ export async function getUserScore(userId: string, season?: number, weekType?: s
 }
 
 export async function getLeaderboard(season: number, weekType: string, week: number) {
-  return prisma.leaderboard.findMany({
+  // First try to get from leaderboard table (for completed/scored picks)
+  const leaderboardEntries = await prisma.leaderboard.findMany({
     where: {
       season,
       weekType,
@@ -132,5 +133,74 @@ export async function getLeaderboard(season: number, weekType: string, week: num
         },
       },
     },
+  });
+
+  // If we have scored entries, return them
+  if (leaderboardEntries.length > 0) {
+    return leaderboardEntries;
+  }
+
+  // Otherwise, get all users who have submitted picks for this week
+  const usersWithPicks = await prisma.user.findMany({
+    where: {
+      picks: {
+        some: {
+          game: {
+            season,
+            weekType,
+            week,
+          },
+        },
+      },
+    },
+    include: {
+      picks: {
+        where: {
+          game: {
+            season,
+            weekType,
+            week,
+          },
+        },
+        include: {
+          game: true,
+        },
+      },
+    },
+  });
+
+  // Transform to leaderboard format
+  return usersWithPicks.map((user, index) => {
+    const completedPicks = user.picks.filter(pick => pick.game.isComplete);
+    const totalPoints = completedPicks.reduce((sum, pick) => sum + (pick.points || 0), 0);
+    const correctPicks = completedPicks.filter(p => p.points === 1).length;
+    const ties = completedPicks.filter(p => p.points === 0.5).length;
+    const winPercentage = completedPicks.length > 0 ? (correctPicks / completedPicks.length) * 100 : 0;
+
+    return {
+      id: `temp-${user.id}`,
+      userId: user.id,
+      season,
+      weekType,
+      week,
+      totalPicks: user.picks.length,
+      correctPicks,
+      ties,
+      totalPoints,
+      winPercentage,
+      rank: completedPicks.length > 0 ? null : null, // Will be calculated client-side
+      user: {
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        image: user.image,
+      },
+    };
+  }).sort((a, b) => {
+    // Sort by total points desc, then by total picks desc
+    if (b.totalPoints !== a.totalPoints) {
+      return b.totalPoints - a.totalPoints;
+    }
+    return b.totalPicks - a.totalPicks;
   });
 }
