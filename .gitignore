@@ -45,3 +45,11 @@ next-env.d.ts
 # Admin credentials (never commit)
 ADMIN_KEYS.txt
 admin-credentials.txt
+
+# Planning and documentation files
+CLAUDE.md
+TODO.md
+TO-STUDY.md
+PROJECT_STATUS.md
+ESLINT_FIXES.md
+/scripts/
