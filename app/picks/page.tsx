@@ -122,11 +122,16 @@ export default function PicksPage() {
         throw new Error(data.error || 'Failed to submit picks');
       }
 
-      setSuccess('Picks submitted successfully!');
+      setSuccess('Picks submitted successfully! Redirecting to your dashboard...');
       
       // Save submission to localStorage
       localStorage.setItem('nflPicksSubmitted', 'true');
       localStorage.setItem('nflUsername', username);
+      
+      // Redirect to dashboard after 2 seconds
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 2000);
     } catch (err: any) {
       setError(err.message || 'Failed to submit picks');
     } finally {

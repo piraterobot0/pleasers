@@ -36,6 +36,16 @@ export default function Navigation() {
                 Make Picks
               </Link>
               <Link
+                href="/dashboard"
+                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  isActive('/dashboard')
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                My Dashboard
+              </Link>
+              <Link
                 href="/leaderboard"
                 className={`px-3 py-2 rounded-md text-sm font-medium ${
                   isActive('/leaderboard')
@@ -68,7 +78,17 @@ export default function Navigation() {
                   : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
-              Make Picks
+              Picks
+            </Link>
+            <Link
+              href="/dashboard"
+              className={`px-3 py-2 rounded-md text-sm font-medium ${
+                isActive('/dashboard')
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              Dashboard
             </Link>
             <Link
               href="/leaderboard"
