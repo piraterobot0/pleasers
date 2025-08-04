@@ -41,3 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 /app/generated/prisma
+
+# Admin credentials (never commit)
+ADMIN_KEYS.txt
+admin-credentials.txt

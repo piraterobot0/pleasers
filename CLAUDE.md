@@ -2,7 +2,7 @@
 
 ## Production Details
 🌐 **Live URL**: https://pleasers.vercel.app
-🔑 **Admin Key**: 3Su1diWj1YA224NiB+F8Jweq+8OX8UUVtnt6ZQm1oOo=
+🔑 **Admin Key**: See ADMIN_KEYS.txt (gitignored)
 
 ## Project Overview
 NFL Spreads Picker - A web app where users pick NFL games with modified spreads (+6 for home teams).
@@ -73,7 +73,7 @@ npx prisma db push
 npx prisma generate
 
 # Admin panel password
-# Production: 3Su1diWj1YA224NiB+F8Jweq+8OX8UUVtnt6ZQm1oOo=
+# Production: See ADMIN_KEYS.txt (gitignored)
 # Local: test-admin-key-change-in-production
 ```
 
