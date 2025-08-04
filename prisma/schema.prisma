@@ -21,6 +21,7 @@ model User {
   picks         Pick[]
   accounts      Account[]
   sessions      Session[]
+  leaderboard   Leaderboard[]
   
   @@index([email])
   @@index([username])
@@ -117,6 +118,8 @@ model Leaderboard {
   rank          Int?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   @@unique([userId, season, weekType, week])
   @@index([season, weekType, week, totalPoints])
