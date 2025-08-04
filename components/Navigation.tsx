@@ -1,12 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { useSession, signIn, signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function Navigation() {
-  const { data: session, status } = useSession();
   const pathname = usePathname();
+  const [username, setUsername] = useState<string | null>(null);
+
+  useEffect(() => {
+    const savedUsername = localStorage.getItem('nflUsername');
+    setUsername(savedUsername);
+  }, [pathname]); // Re-check on route change
 
   const isActive = (path: string) => pathname === path;
 
@@ -44,27 +49,10 @@ export default function Navigation() {
           </div>
 
           <div className="flex items-center space-x-4">
-            {status === 'loading' ? (
-              <div className="text-sm text-gray-500">Loading...</div>
-            ) : session ? (
-              <div className="flex items-center space-x-4">
-                <div className="text-sm">
-                  <span className="text-gray-700">{session.user?.name || session.user?.email}</span>
-                </div>
-                <button
-                  onClick={() => signOut()}
-                  className="px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-                >
-                  Sign Out
-                </button>
+            {username && (
+              <div className="text-sm text-gray-700">
+                Playing as: <span className="font-semibold">{username}</span>
               </div>
-            ) : (
-              <button
-                onClick={() => signIn()}
-                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                Sign In
-              </button>
             )}
           </div>
         </div>

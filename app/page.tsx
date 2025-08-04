@@ -1,13 +1,8 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 export default function HomePage() {
-  const { data: session } = useSession();
-  const router = useRouter();
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <div className="container mx-auto px-4 py-16">
@@ -52,29 +47,18 @@ export default function HomePage() {
               16 games available for picking! Get your picks in before games start.
             </p>
             <div className="flex justify-center space-x-4">
-              {session ? (
-                <>
-                  <Link
-                    href="/picks"
-                    className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
-                  >
-                    Make Your Picks
-                  </Link>
-                  <Link
-                    href="/leaderboard"
-                    className="px-6 py-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 font-medium"
-                  >
-                    View Leaderboard
-                  </Link>
-                </>
-              ) : (
-                <Link
-                  href="/auth/signin"
-                  className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
-                >
-                  Sign In to Start Playing
-                </Link>
-              )}
+              <Link
+                href="/picks"
+                className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
+              >
+                Make Your Picks
+              </Link>
+              <Link
+                href="/leaderboard"
+                className="px-6 py-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 font-medium"
+              >
+                View Leaderboard
+              </Link>
             </div>
           </div>
 
@@ -114,6 +98,13 @@ export default function HomePage() {
                 </li>
               </ul>
             </div>
+          </div>
+
+          <div className="mt-8 bg-blue-50 rounded-lg p-6">
+            <h3 className="font-semibold mb-2">No Sign-up Required!</h3>
+            <p className="text-sm text-gray-600">
+              Just enter a username when you submit your picks. Your picks are saved locally in your browser.
+            </p>
           </div>
 
           <div className="mt-12 text-sm text-gray-500">

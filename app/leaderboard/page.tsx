@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
 
 interface LeaderboardEntry {
   id: string;
@@ -21,12 +20,14 @@ interface LeaderboardEntry {
 }
 
 export default function LeaderboardPage() {
-  const { data: session } = useSession();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentUsername, setCurrentUsername] = useState<string | null>(null);
 
   useEffect(() => {
+    const savedUsername = localStorage.getItem('nflUsername');
+    setCurrentUsername(savedUsername);
     fetchLeaderboard();
   }, []);
 
@@ -95,7 +96,7 @@ export default function LeaderboardPage() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {leaderboard.map((entry, index) => {
-                  const isCurrentUser = session?.user?.id === entry.userId;
+                  const isCurrentUser = currentUsername === entry.user.username;
                   return (
                     <tr
                       key={entry.id}
@@ -120,13 +121,6 @@ export default function LeaderboardPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          {entry.user.image && (
-                            <img
-                              className="h-8 w-8 rounded-full mr-3"
-                              src={entry.user.image}
-                              alt=""
-                            />
-                          )}
                           <div>
                             <div className="text-sm font-medium text-gray-900">
                               {entry.user.name || entry.user.username}

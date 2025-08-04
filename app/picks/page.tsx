@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import GameCard from '@/components/GameCard';
 
 interface Game {
@@ -23,28 +21,39 @@ interface Pick {
 }
 
 export default function PicksPage() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
   const [games, setGames] = useState<Game[]>([]);
   const [picks, setPicks] = useState<Map<string, 'home' | 'away'>>(new Map());
-  const [existingPicks, setExistingPicks] = useState<any[]>([]);
+  const [username, setUsername] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin');
+    // Load picks from localStorage
+    const savedPicks = localStorage.getItem('nflPicks');
+    const savedUsername = localStorage.getItem('nflUsername');
+    
+    if (savedPicks) {
+      const picksData = JSON.parse(savedPicks);
+      setPicks(new Map(Object.entries(picksData)));
     }
-  }, [status, router]);
-
-  useEffect(() => {
+    
+    if (savedUsername) {
+      setUsername(savedUsername);
+    }
+    
     fetchGames();
-    if (session?.user?.id) {
-      fetchUserPicks();
+  }, []);
+
+  useEffect(() => {
+    // Save picks to localStorage whenever they change
+    if (picks.size > 0) {
+      const picksObject = Object.fromEntries(picks);
+      localStorage.setItem('nflPicks', JSON.stringify(picksObject));
     }
-  }, [session]);
+  }, [picks]);
 
   const fetchGames = async () => {
     try {
@@ -60,23 +69,6 @@ export default function PicksPage() {
     }
   };
 
-  const fetchUserPicks = async () => {
-    try {
-      const response = await fetch('/api/picks?season=2025&weekType=preseason&week=1');
-      if (response.ok) {
-        const data = await response.json();
-        const picksMap = new Map();
-        data.forEach((pick: any) => {
-          picksMap.set(pick.gameId, pick.pickedTeam);
-        });
-        setPicks(picksMap);
-        setExistingPicks(data);
-      }
-    } catch (err) {
-      console.error('Failed to fetch existing picks:', err);
-    }
-  };
-
   const handlePickChange = (gameId: string, team: 'home' | 'away') => {
     const newPicks = new Map(picks);
     newPicks.set(gameId, team);
@@ -86,6 +78,12 @@ export default function PicksPage() {
   };
 
   const handleSubmitPicks = async () => {
+    // Check if username is set
+    if (!username.trim()) {
+      setShowUsernameModal(true);
+      return;
+    }
+
     // Check if all games have picks
     const unpickedGames = games.filter(game => {
       const gameDate = new Date(game.gameTime);
@@ -108,12 +106,15 @@ export default function PicksPage() {
         pickedTeam,
       }));
 
-      const response = await fetch('/api/picks', {
+      const response = await fetch('/api/picks/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ picks: picksArray }),
+        body: JSON.stringify({ 
+          picks: picksArray,
+          username: username.trim()
+        }),
       });
 
       if (!response.ok) {
@@ -122,11 +123,22 @@ export default function PicksPage() {
       }
 
       setSuccess('Picks submitted successfully!');
-      fetchUserPicks(); // Refresh picks
+      
+      // Save submission to localStorage
+      localStorage.setItem('nflPicksSubmitted', 'true');
+      localStorage.setItem('nflUsername', username);
     } catch (err: any) {
       setError(err.message || 'Failed to submit picks');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleUsernameSubmit = () => {
+    if (username.trim()) {
+      localStorage.setItem('nflUsername', username);
+      setShowUsernameModal(false);
+      handleSubmitPicks();
     }
   };
 
@@ -184,6 +196,19 @@ export default function PicksPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">NFL Preseason Week 1 Picks</h1>
+        
+        {/* Username Display */}
+        {username && (
+          <div className="mb-4 text-sm text-gray-600">
+            Playing as: <span className="font-semibold">{username}</span>
+            <button
+              onClick={() => setShowUsernameModal(true)}
+              className="ml-2 text-blue-600 hover:text-blue-800"
+            >
+              (change)
+            </button>
+          </div>
+        )}
         
         {/* Status Bar */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
@@ -247,9 +272,42 @@ export default function PicksPage() {
             <li>• Win = 1 point, Loss = 0 points, Push (tie) = 0.5 points</li>
             <li>• You must pick all games before they start</li>
             <li>• Picks lock at game time</li>
+            <li>• Your picks are saved locally in your browser</li>
           </ul>
         </div>
       </div>
+
+      {/* Username Modal */}
+      {showUsernameModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Enter Your Username</h3>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter username"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onKeyPress={(e) => e.key === 'Enter' && handleUsernameSubmit()}
+            />
+            <div className="flex justify-end space-x-2 mt-4">
+              <button
+                onClick={() => setShowUsernameModal(false)}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUsernameSubmit}
+                disabled={!username.trim()}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
+              >
+                Save & Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
