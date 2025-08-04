@@ -100,10 +100,10 @@ export async function GET(request: Request) {
         completedGames: picks.length - pendingGames,
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error fetching user picks:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch user picks' },
+      { error: (error as Error).message || 'Failed to fetch user picks' },
       { status: 500 }
     );
   }

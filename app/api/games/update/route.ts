@@ -30,10 +30,10 @@ export async function POST(request: Request) {
       message: 'Game score updated successfully',
       game,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error updating game score:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to update game score' },
+      { error: (error as Error).message || 'Failed to update game score' },
       { status: 500 }
     );
   }

@@ -42,7 +42,7 @@ export async function submitPicks(userId: string, picks: PickSubmission[]) {
 }
 
 export async function getUserPicks(userId: string, season?: number, weekType?: string, week?: number) {
-  const where: any = { userId };
+  const where: Record<string, unknown> = { userId };
   
   if (season && weekType && week) {
     where.game = {
@@ -81,7 +81,7 @@ export async function getPicksByGame(gameId: string) {
 }
 
 export async function getUserScore(userId: string, season?: number, weekType?: string, week?: number) {
-  const where: any = {
+  const where: Record<string, unknown> = {
     userId,
     points: { not: null },
   };

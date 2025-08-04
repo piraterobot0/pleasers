@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import { seedGames } from '@/lib/db/games';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
-export async function POST(request: Request) {
+export async function POST() {
   try {
     // For MVP, we'll allow seeding without auth check
     // In production, you'd want to restrict this to admins

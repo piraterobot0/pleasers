@@ -1,5 +1,4 @@
 import { prisma } from '@/lib/prisma';
-import { Game, Pick, Prisma } from '@prisma/client';
 import { getGamesWithModifiedSpreads } from '@/lib/data/preseason-games';
 
 export async function seedGames() {

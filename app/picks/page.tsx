@@ -132,8 +132,8 @@ export default function PicksPage() {
       setTimeout(() => {
         window.location.href = '/dashboard';
       }, 2000);
-    } catch (err: any) {
-      setError(err.message || 'Failed to submit picks');
+    } catch (err) {
+      setError((err as Error).message || 'Failed to submit picks');
     } finally {
       setSubmitting(false);
     }
@@ -168,7 +168,7 @@ export default function PicksPage() {
         gamesCompleted++;
         const pick = picks.get(game.id);
         if (game.homeScore !== null && game.awayScore !== null && pick) {
-          const actualDiff = game.homeScore - game.awayScore;
+          const actualDiff = game.homeScore! - game.awayScore!;
           const spreadResult = actualDiff + game.modifiedSpread;
 
           if (spreadResult === 0) {

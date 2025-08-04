@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+interface Pick {
+  gameId: string;
+  pickedTeam: 'home' | 'away';
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -36,7 +41,7 @@ export async function POST(request: Request) {
     }
 
     // Validate that games haven't started
-    const gameIds = picks.map((p: any) => p.gameId);
+    const gameIds = picks.map((p: Pick) => p.gameId);
     const games = await prisma.game.findMany({
       where: {
         id: { in: gameIds },
@@ -67,7 +72,7 @@ export async function POST(request: Request) {
 
     // Create new picks
     const createdPicks = await prisma.pick.createMany({
-      data: picks.map((pick: any) => ({
+      data: picks.map((pick: Pick) => ({
         userId: user.id,
         gameId: pick.gameId,
         pickedTeam: pick.pickedTeam,
@@ -79,10 +84,10 @@ export async function POST(request: Request) {
       count: createdPicks.count,
       username: user.username,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error submitting picks:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to submit picks' },
+      { error: (error as Error).message || 'Failed to submit picks' },
       { status: 500 }
     );
   }

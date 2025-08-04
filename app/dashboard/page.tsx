@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import GameCard from '@/components/GameCard';
 
 interface Game {
   id: string;
@@ -76,8 +75,8 @@ export default function DashboardPage() {
       const data = await response.json();
       setUserData(data);
       localStorage.setItem('nflUsername', usernameToFetch);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load your picks');
+    } catch (err) {
+      setError((err as Error).message || 'Failed to load your picks');
     } finally {
       setLoading(false);
     }
@@ -104,7 +103,7 @@ export default function DashboardPage() {
       return null;
     }
 
-    const actualDiff = game.homeScore - game.awayScore;
+    const actualDiff = game.homeScore! - game.awayScore!;
     const spreadResult = actualDiff + game.modifiedSpread;
 
     if (spreadResult === 0) {

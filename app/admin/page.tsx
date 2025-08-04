@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
 interface Game {
   id: string;
@@ -16,7 +15,6 @@ interface Game {
 }
 
 export default function AdminPage() {
-  const router = useRouter();
   const [games, setGames] = useState<Game[]>([]);
   const [adminKey, setAdminKey] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -50,7 +48,7 @@ export default function AdminPage() {
         };
       });
       setScores(initialScores);
-    } catch (err) {
+    } catch {
       setMessage({ type: 'error', text: 'Failed to load games' });
     }
   };
@@ -115,8 +113,9 @@ export default function AdminPage() {
       
       // Refresh games
       await fetchGames();
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.message || 'Failed to update score' });
+    } catch (err) {
+      const error = err as Error;
+      setMessage({ type: 'error', text: error.message || 'Failed to update score' });
     } finally {
       setLoading(false);
     }
@@ -131,7 +130,7 @@ export default function AdminPage() {
       if (!response.ok) throw new Error('Failed to seed games');
       setMessage({ type: 'success', text: 'Games seeded successfully!' });
       await fetchGames();
-    } catch (err) {
+    } catch {
       setMessage({ type: 'error', text: 'Failed to seed games' });
     } finally {
       setLoading(false);
@@ -292,9 +291,9 @@ export default function AdminPage() {
         <div className="mt-6 p-4 bg-gray-50 rounded-lg">
           <h3 className="font-semibold mb-2">Instructions:</h3>
           <ul className="text-sm text-gray-600 space-y-1">
-            <li>• Click "Seed Games" to initialize the database with game data</li>
+            <li>• Click &quot;Seed Games&quot; to initialize the database with game data</li>
             <li>• Enter scores for completed games</li>
-            <li>• Click "Update" to save scores and calculate pick results</li>
+            <li>• Click &quot;Update&quot; to save scores and calculate pick results</li>
             <li>• Scores are automatically calculated and leaderboard updated</li>
             <li>• Games marked as complete cannot be edited again</li>
           </ul>

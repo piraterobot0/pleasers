@@ -48,7 +48,7 @@ export default function GameCard({ game, pick, onPickChange, disabled = false }:
       return null;
     }
 
-    const actualDiff = game.homeScore - game.awayScore;
+    const actualDiff = game.homeScore! - game.awayScore!;
     const spreadResult = actualDiff + game.modifiedSpread;
 
     if (spreadResult === 0) {
